@@ -7,12 +7,14 @@
 // Add your own problems here
 #include "problems/sum.hpp"
 #include "problems/dfa.hpp"
+#include "problems/determ.h"
 
 int runProblem(int argc, char* argv[]) {
     // Add your own problems here
     std::vector<Problem *> problems;
     problems.push_back(new SumProblem());
     problems.push_back(new DFAProblem());
+    problems.push_back(new DeterminizeProblem()); // <-- ÚJ OSZTÁLY REGISZTRÁLÁSA
 
     cxxopts::Options options("project", "Run the specific problem");
 
