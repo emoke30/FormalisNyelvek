@@ -49,31 +49,23 @@ int RegexProblem::run(const cxxopts::ParseResult &args) {
     }
 
     // Általános logcat sor illesztő (1: dátum, 2: idő, 3: PID, 4: TID, 5: szint, 6: tag, 7: message)
-    regex logcat_line_rx(R"(^([0-9-]+)\s+([0-9:.]+)\s+([0-9]+)\s+([0-9]+)\s+([IDVEFAW])\s+(.+?):(?:\s*(.*))?\r?$)");
+    regex logcat_line_rx(R"(^([0-9-]+)\s+([0-9:.]+)\s+([0-9]+)\s+([0-9]+)\s+([IDVEFAW])\s+(.*?):(?:\s*(.*))?\r?$)");
 
     if (taskNum == 1) {
         // 1. feladat: 10 db reguláris kifejezés megszámlálása
-        vector<regex> patterns = {
-            // 1. 10. hónap 15-én jött létre
-            regex(R"(^10-15\s+)"),
-            // 2. 10. hónap 15-én 10:18:51-kor jött létre
-            regex(R"(^10-15\s+10:18:51(?:\.[0-9]+)?\s+)"),
-            // 3. 51 másodperckor jött létre (mindegy a perc)
-            regex(R"(^[0-9-]+\s+[0-9]{1,2}:[0-9]{2}:51(?:\.[0-9]+)?\s+)"),
-            // 4. lowmemorykiller taget tartalmazó sor
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[IDVEFAW]\s+[^:]*\blowmemorykiller\b[^:]*:)"),
-            // 5. 10:18:51-kor keletkező 221-es PID-jú sor
-            regex(R"(^[0-9-]+\s+10:18:51(?:\.[0-9]+)?\s+221\s+[0-9]+\s+)"),
-            // 6. összes hibát tartalmazó sor (E)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+)"),
-            // 7. összes warning (W), amit a PackageManager küld
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+W\s+[^:]*\bPackageManager\b[^:]*:)"),
-            // 8. összes ExoPlayer-es debug (D) infó (kis- és nagybetű függetlenül)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+D\s+.*ExoPlayer)"),
-            // 9. összes java állomány pozíciót tartalmazó hiba és warning (E/W + .java:)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[EW]\s+.*\.java:)"),
-            // 10. tartalmazza a Thread szót a message részben (nem a tagben)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[IDVEFAW]\s+.+?:\s+.*\bThread\b)")
+        const string PREFIX = R"(^\S+ \S+ +\d+ +\d+ )";
+
+        const vector<regex> patterns = {
+            regex(R"(^10-15 )"),                                      // 1. 10. ho 15.
+            regex(R"(^10-15 10:18:51\.)"),                            // 2. 10-15 10:18:51
+            regex(R"(^\S+ \d{2}:\d{2}:51\.)"),                        // 3. 51. masodperc
+            regex(PREFIX + R"([IDVEFAW] lowmemorykiller\s*:)"),       // 4. lowmemorykiller tag
+            regex(R"(^\S+ 10:18:51\.\d+ +221 )"),                     // 5. 10:18:51, PID 221
+            regex(PREFIX + R"(E )"),                                  // 6. hibak (E)
+            regex(PREFIX + R"(W PackageManager\s*:)"),                // 7. PackageManager warning
+            regex(PREFIX + R"(D .*ExoPlayer)"),                       // 8. ExoPlayer debug (barhol a sorban)
+            regex(PREFIX + R"([EW] .*\.java:[0-9]+)"),                // 9. .java pozicios E/W
+            regex(PREFIX + R"([IDVEFAW] [^:]+:.*Thread)")             // 10. "Thread" az uzenetben
         };
 
         vector<int> counts(patterns.size(), 0);
@@ -91,7 +83,7 @@ int RegexProblem::run(const cxxopts::ParseResult &args) {
 
     } else if (taskNum == 2) {
         // 2. feladat: Hibák (E) stack trace-éből a .java fájlnevek kinyerése előfordulási sorrendben
-        regex error_msg_rx(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+.+?:\s*(.*)\r?$)");
+        regex error_msg_rx(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+.*?:(.*)$)");
         regex java_file_rx(R"(([A-Za-z0-9_$]+\.java):[0-9]+)");
 
         for (const auto& l : lines) {
