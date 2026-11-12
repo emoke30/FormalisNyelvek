@@ -3,6 +3,7 @@
 #include <map>
 #include <regex>
 #include <set>
+
 #include "rgx.hpp"
 
 // The start of every log line: date, time, process id, thread id
@@ -33,6 +34,9 @@ bool RegexProblem::loadLines(const std::string &filename) {
     std::string line;
 
     while (std::getline(file, line)) {
+        if (!line.empty() && line.back() == '\r') {
+            line.pop_back();
+        }
         lines.push_back(line);
     }
 
@@ -183,8 +187,8 @@ std::vector<std::string> RegexProblem::countMainThreadErrors() const {
 
 // Run the regex problem
 int RegexProblem::run(const cxxopts::ParseResult &args) {
-    std::string inputFilename = args["input"].as<std::string>();
-    std::string outputFilename = args["output"].as<std::string>();
+    std::string inputFilename = args.count("input") ? args["input"].as<std::string>() : "logcat_test.txt";
+    std::string outputFilename = args.count("output") ? args["output"].as<std::string>() : "output.txt";
     int task = args["rgx"].as<int>();
 
     if (!loadLines(inputFilename)) {
