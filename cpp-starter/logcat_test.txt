@@ -1,0 +1,8 @@
+10-15 10:18:51.254   601   601 E InputManager-JNI: at java.util.HashMap.putMapEntries(HashMap.java:500)
+10-15 10:18:51.300   221   225 I lowmemorykiller: Killing 'com.example.app' (1234)
+10-15 10:19:51.100   601   702 W PackageManager: Unknown permission android.permission.FOO
+10-15 10:20:05.111   800   800 D ExoPlayerImpl: Init 2.18.1
+10-15 10:20:06.222   800   801 E AndroidRuntime: FATAL EXCEPTION: main Thread
+10-15 10:20:07.333   800   800 W Thread-2: Some warning message without the word
+10-16 11:00:51.999   900   900 E ActivityManager: Error in ActivityManagerService.java:1024 and ZygoteInit.java:88
+10-16 11:05:12.000   900   900 E ActivityManager: Another error in ZygoteInit.java:90
