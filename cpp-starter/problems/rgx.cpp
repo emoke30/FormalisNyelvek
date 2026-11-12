@@ -69,7 +69,7 @@ int RegexProblem::run(const cxxopts::ParseResult &args) {
             // 7. összes warning (W), amit a PackageManager küld
             regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+W\s+[^:]*\bPackageManager\b[^:]*:)"),
             // 8. összes ExoPlayer-es debug (D) infó (kis- és nagybetű függetlenül)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+D\s+.*ExoPlayer)", regex_constants::icase),
+            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+D\s+.*ExoPlayer)"),
             // 9. összes java állomány pozíciót tartalmazó hiba és warning (E/W + .java:)
             regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[EW]\s+.*\.java:)"),
             // 10. tartalmazza a Thread szót a message részben (nem a tagben)
