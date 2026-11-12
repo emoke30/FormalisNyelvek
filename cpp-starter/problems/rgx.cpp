@@ -68,12 +68,12 @@ int RegexProblem::run(const cxxopts::ParseResult &args) {
             regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+)"),
             // 7. összes warning (W), amit a PackageManager küld
             regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+W\s+[^:]*\bPackageManager\b[^:]*:)"),
-            // 8. összes ExoPlayer-es debug (D) infó (tagben vagy message-ben egyaránt)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+D\s+.*ExoPlayer)"),
+            // 8. összes ExoPlayer-es debug (D) infó (kis- és nagybetű függetlenül)
+            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+D\s+.*ExoPlayer)", regex_constants::icase),
             // 9. összes java állomány pozíciót tartalmazó hiba és warning (E/W + .java:)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[EW]\s+.*\.java:[0-9]+)"),
+            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[EW]\s+.*\.java:)"),
             // 10. tartalmazza a Thread szót a message részben (nem a tagben)
-            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[IDVEFAW]\s+[^:]+:.*\bThread\b)")
+            regex(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+[IDVEFAW]\s+.+?:\s+.*\bThread\b)")
         };
 
         vector<int> counts(patterns.size(), 0);
@@ -91,7 +91,7 @@ int RegexProblem::run(const cxxopts::ParseResult &args) {
 
     } else if (taskNum == 2) {
         // 2. feladat: Hibák (E) stack trace-éből a .java fájlnevek kinyerése előfordulási sorrendben
-        regex error_msg_rx(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+[^:]+:(.*)\r?$)");
+        regex error_msg_rx(R"(^[0-9-]+\s+[0-9:.]+\s+[0-9]+\s+[0-9]+\s+E\s+.+?:\s*(.*)\r?$)");
         regex java_file_rx(R"(([A-Za-z0-9_$]+\.java):[0-9]+)");
 
         for (const auto& l : lines) {
